@@ -51,6 +51,12 @@ export const useRow = ({ row, rows = [], setRows }: IRowProps) => {
   const [editValues, setEditValues] = useState({ ...row });
 
   useEffect(() => {
+    if (!isEditing) {
+      setEditValues({ ...row });
+    }
+  }, [row, isEditing]);
+
+  useEffect(() => {
     if (row.rowName.trim()) setIsEditing(false);
   }, [row.rowName]);
 
@@ -135,10 +141,11 @@ export const useRow = ({ row, rows = [], setRows }: IRowProps) => {
   }, [isEditing, row, rows, setRows]);
 
   const countChild = (row: IRow): number => {
-    if (!row.child || row.child.length === 0) return 0;
-    return row.child.reduce((acc, child, i, arr) => {
-      return acc + countChild(child);
-    }, row.child.length);
+    if (!row.child) return 0;
+    return row.child.reduce(
+      (acc, child) => acc + countChild(child),
+      row.child.length
+    );
   };
 
   return {

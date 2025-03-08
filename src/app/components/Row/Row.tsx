@@ -5,7 +5,6 @@ import { TrashIcon } from "src/assets/icons/TrashIcon";
 import { useRowsContext } from "./Row.context";
 import { EditableFields, IRowProps } from "./Row.types";
 import { Input } from "src/app/App.style";
-import { useMemo } from "react";
 
 const FIELD_TYPES: Record<keyof EditableFields, string> = {
   rowName: "text",
@@ -48,8 +47,6 @@ export default function Row(props: Readonly<IRowProps>) {
     </Styled.TableCell>
   );
 
-  const childCount = useMemo(() => countChild(row), [row]);
-
   return (
     <>
       <Styled.TableRow onDoubleClick={() => !row.isNew && setIsEditing(true)}>
@@ -62,7 +59,7 @@ export default function Row(props: Readonly<IRowProps>) {
               <TrashIcon color="#DF4444" size={16} />
             </Styled.TabButton>
             <Styled.Line
-              $childCount={childCount}
+              $childCount={countChild(row)}
               $count={row.child?.length ?? 0}
             />
           </Styled.TabButtons>
@@ -71,12 +68,8 @@ export default function Row(props: Readonly<IRowProps>) {
           renderCell(field, FIELD_TYPES[field])
         )}
       </Styled.TableRow>
-      {row.child?.map((childRow) => (
-        <Row
-          key={childRow.id}
-          row={childRow}
-          level={level + 1}
-        />
+      {row.child?.map((childRow, index) => (
+        <Row key={childRow.id} row={childRow} level={level + 1} />
       ))}
     </>
   );
